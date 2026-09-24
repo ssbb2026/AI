@@ -1000,33 +1000,25 @@ for metric, value in retrieval_metrics.items():
 
 
 # ============================================================
-# 13. EVALUATION DATASET
+# 16. GENERATION EVALUATION DATA
 # ============================================================
 
-evaluation_data = [
+generation_test_data = [
 
     {
         "question":
             "What are the main features of Earth?",
 
-        "relevant_chunks":
-            [47, 2, 1]
+        "ground_truth":
+            "Earth has an atmosphere, oceans, continents, and a solid surface."
     },
 
     {
         "question":
             "What is Earth made of?",
 
-        "relevant_chunks":
-            [7, 3, 4]
-    },
-
-    {
-        "question":
-            "What is Earth's atmosphere?",
-
-        "relevant_chunks":
-            []
+        "ground_truth":
+            "Earth consists of different layers and materials that make up its interior and surface."
     }
 ]
 
