@@ -597,15 +597,32 @@ tokenizer = AutoTokenizer.from_pretrained(
 )
 
 
-llm = AutoModelForCausalLM.from_pretrained(
-    LLM_NAME,
-    torch_dtype=(
-        torch.float16
-        if torch.cuda.is_available()
-        else torch.float32
-    ),
-    device_map="auto"
-)
+# -----------------------------------------------------
+# LOAD LLM
+# -----------------------------------------------------
+
+if torch.cuda.is_available():
+
+    print("LLM device: CUDA")
+
+    llm = AutoModelForCausalLM.from_pretrained(
+        LLM_NAME,
+        dtype=torch.float16,
+        device_map="auto"
+    )
+
+else:
+
+    print("LLM device: CPU")
+
+    llm = AutoModelForCausalLM.from_pretrained(
+        LLM_NAME,
+        dtype=torch.float32
+    )
+
+llm.eval()
+
+print("LLM loaded successfully")
 
 
 # ============================================================
