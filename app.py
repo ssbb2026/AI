@@ -637,15 +637,17 @@ def generate_answer(
     prompt = f"""
 You are a document question-answering assistant.
 
-Answer the user's question using ONLY the
-information provided in the document context.
+Answer the question using ONLY the information
+contained in the DOCUMENT CONTEXT.
 
-Do not use outside knowledge.
-
-If the answer cannot be found in the context,
-say:
-
-"I could not find the answer in the document."
+Rules:
+1. Do not use outside knowledge.
+2. Give a concise and direct answer.
+3. Do not add unrelated information.
+4. Do not invent facts.
+5. If the answer is not present in the context,
+   say exactly:
+   "I could not find the answer in the document."
 
 DOCUMENT CONTEXT:
 {context}
@@ -683,8 +685,7 @@ ANSWER:
 
         output = llm.generate(
             **inputs,
-            max_new_tokens=300,
-            temperature=0.2,
+            max_new_tokens=200,
             do_sample=True
         )
 
