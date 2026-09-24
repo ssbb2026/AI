@@ -999,37 +999,35 @@ for metric, value in retrieval_metrics.items():
 
 
 # ============================================================
-# 16. GENERATION EVALUATION DATA
+# 13. EVALUATION DATASET
 # ============================================================
 
-# For generation evaluation you need:
-#
-# question
-# ground_truth
-# generated_answer
-#
-# The ground truth should be created manually
-# or from a trusted source.
-
-generation_test_data = [
+evaluation_data = [
 
     {
         "question":
             "What are the main features of Earth?",
 
-        "ground_truth":
-            "Earth has an atmosphere, oceans, continents, and a solid surface."
+        "relevant_chunks":
+            [47, 2, 1]
     },
 
     {
         "question":
             "What is Earth made of?",
 
-        "ground_truth":
-            "Earth consists of different layers and materials that make up its interior and surface."
+        "relevant_chunks":
+            [7, 3, 4]
+    },
+
+    {
+        "question":
+            "What is Earth's atmosphere?",
+
+        "relevant_chunks":
+            []
     }
 ]
-
 
 # ============================================================
 # 17. GENERATE TEST ANSWERS
