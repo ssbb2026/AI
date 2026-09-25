@@ -15,6 +15,7 @@ short_description: AI
 ## 📌 Project Overview
 
 PROJECT LINK:https://huggingface.co/spaces/ssbb2026/AI
+
 An AI-powered **Document Intelligence and Retrieval-Augmented Generation (RAG)** application that enables users to ask natural-language questions about PDF documents.
 
 The system extracts content from a PDF, converts it into structured Markdown, creates structure-aware chunks, generates semantic embeddings using **Sentence Transformers**, and stores them in a **FAISS vector index** for efficient similarity search.
