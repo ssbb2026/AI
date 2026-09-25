@@ -781,14 +781,10 @@ def rag_pipeline(
 
 
 # ============================================================
-# 12. RETRIEVAL EVALUATION
+# 12. RAG RETRIEVAL EVALUATION
 # ============================================================
 
-def hit_at_k(
-    retrieved_chunks,
-    relevant_chunks,
-    k
-):
+def hit_at_k(retrieved_chunks, relevant_chunks, k):
 
     retrieved = retrieved_chunks[:k]
 
@@ -800,11 +796,7 @@ def hit_at_k(
     )
 
 
-def precision_at_k(
-    retrieved_chunks,
-    relevant_chunks,
-    k
-):
+def precision_at_k(retrieved_chunks, relevant_chunks, k):
 
     retrieved = retrieved_chunks[:k]
 
@@ -816,16 +808,10 @@ def precision_at_k(
         for chunk in retrieved
     )
 
-    return relevant_count / len(
-        retrieved
-    )
+    return relevant_count / len(retrieved)
 
 
-def recall_at_k(
-    retrieved_chunks,
-    relevant_chunks,
-    k
-):
+def recall_at_k(retrieved_chunks, relevant_chunks, k):
 
     if not relevant_chunks:
         return 0.0
@@ -837,9 +823,7 @@ def recall_at_k(
         for chunk in retrieved
     )
 
-    return relevant_count / len(
-        relevant_chunks
-    )
+    return relevant_count / len(relevant_chunks)
 
 
 def reciprocal_rank(
@@ -864,36 +848,31 @@ def reciprocal_rank(
 # ============================================================
 
 # IMPORTANT:
-# These relevant chunk IDs are examples.
-#
-# You must replace them with the actual relevant
-# chunk indexes from your PDF.
+# Replace the chunk numbers below with the ACTUAL
+# relevant chunk indexes from your PDF.
 
 evaluation_data = [
 
     {
-        "question":
-            "What are the main features of Earth?",
-
-        "relevant_chunks":
-            [5, 8]
+        "question": "What are the layers of Earth?",
+        "relevant_chunks": [7]
     },
 
     {
-        "question":
-            "What is Earth made of?",
-
-        "relevant_chunks":
-            [10, 11]
+        "question": "What is Earth made of?",
+        "relevant_chunks": [7]
     },
 
     {
-        "question":
-            "What is Earth's atmosphere?",
+        "question": "What are the two main types of Earth's crust?",
+        "relevant_chunks": [7]
+    },
 
-        "relevant_chunks":
-            [15, 16]
+    {
+        "question": "What is the difference between oceanic and continental crust?",
+        "relevant_chunks": [7]
     }
+
 ]
 
 
@@ -911,10 +890,21 @@ def evaluate_retrieval(
     recall_scores = []
     reciprocal_ranks = []
 
+    print("\n")
+    print("=" * 70)
+    print("RETRIEVAL EVALUATION")
+    print("=" * 70)
+
     for item in evaluation_data:
 
+        question = item["question"]
+
+        relevant_chunks = set(
+            item["relevant_chunks"]
+        )
+
         results = search_documents(
-            item["question"],
+            question,
             top_k=k
         )
 
@@ -923,58 +913,96 @@ def evaluate_retrieval(
             for result in results
         ]
 
-        relevant_chunks = set(
-            item["relevant_chunks"]
+        # -----------------------------------------
+        # Calculate metrics
+        # -----------------------------------------
+
+        hit = hit_at_k(
+            retrieved_chunks,
+            relevant_chunks,
+            k
         )
 
-        hit_scores.append(
-            hit_at_k(
-                retrieved_chunks,
-                relevant_chunks,
-                k
-            )
+        precision = precision_at_k(
+            retrieved_chunks,
+            relevant_chunks,
+            k
         )
 
-        precision_scores.append(
-            precision_at_k(
-                retrieved_chunks,
-                relevant_chunks,
-                k
-            )
+        recall = recall_at_k(
+            retrieved_chunks,
+            relevant_chunks,
+            k
         )
 
-        recall_scores.append(
-            recall_at_k(
-                retrieved_chunks,
-                relevant_chunks,
-                k
-            )
+        mrr = reciprocal_rank(
+            retrieved_chunks,
+            relevant_chunks
         )
 
-        reciprocal_ranks.append(
-            reciprocal_rank(
-                retrieved_chunks,
-                relevant_chunks
-            )
-        )
+        hit_scores.append(hit)
+        precision_scores.append(precision)
+        recall_scores.append(recall)
+        reciprocal_ranks.append(mrr)
+
+        # -----------------------------------------
+        # Display individual result
+        # -----------------------------------------
+
+        print("\nQUESTION:")
+        print(question)
+
+        print("\nRetrieved Chunks:")
+        print(retrieved_chunks)
+
+        print("Relevant Chunks:")
+        print(list(relevant_chunks))
+
+        print(f"Hit@{k}: {hit}")
+        print(f"Precision@{k}: {precision:.4f}")
+        print(f"Recall@{k}: {recall:.4f}")
+        print(f"MRR: {mrr:.4f}")
+
+        print("-" * 70)
+
+    # ========================================================
+    # AVERAGE METRICS
+    # ========================================================
 
     metrics = {
 
         f"Hit@{k}":
-            np.mean(hit_scores),
+            float(np.mean(hit_scores)),
 
         f"Precision@{k}":
-            np.mean(precision_scores),
+            float(np.mean(precision_scores)),
 
         f"Recall@{k}":
-            np.mean(recall_scores),
+            float(np.mean(recall_scores)),
 
         "MRR":
-            np.mean(reciprocal_ranks)
-
+            float(np.mean(reciprocal_ranks))
     }
 
+    # ========================================================
+    # DISPLAY FINAL RESULTS
+    # ========================================================
+
+    print("\n")
+    print("=" * 70)
+    print("FINAL RETRIEVAL METRICS")
+    print("=" * 70)
+
+    for metric, value in metrics.items():
+
+        print(
+            f"{metric}: {value:.4f}"
+        )
+
+    print("=" * 70)
+
     return metrics
+
 
 
 # ============================================================
@@ -1080,7 +1108,7 @@ for item in generated_answers:
     print("\nSOURCES:")
     print(item["sources"])
 
-    print("-" * 60)
+    print("-" * 70)
 
 
 # ============================================================
